@@ -28,7 +28,7 @@ export default function App() {
     <ThemeProvider theme={theme}>
       <GlobalStyle />
       <AuthProvider>
-        <BrowserRouter>
+        <BrowserRouter basename="/ServiceDesk_plus/">
           <Routes>
             {/* Public */}
             <Route path="/" element={<HomePage />} />
@@ -142,7 +142,7 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
-<Route path="*" element={<NotFoundPage />} />
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>
