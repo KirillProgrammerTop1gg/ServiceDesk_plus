@@ -230,6 +230,10 @@ class CSRFMiddleware(BaseHTTPMiddleware):
         method = request.method
         path = request.url.path
         
+        is_preflight = method == "OPTIONS"
+        if is_preflight:
+            return await call_next(request)
+        
         is_safe_method = method in ("GET", "HEAD", "OPTIONS", "TRACE")
         has_session = "access_token" in request.cookies
         
@@ -272,6 +276,7 @@ class CSRFMiddleware(BaseHTTPMiddleware):
 app = FastAPI(title="Service Desk API", dependencies=[Depends(limit_general)])
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+app.add_middleware(CSRFMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -279,10 +284,9 @@ app.add_middleware(
         "https://kirillprogrammertop1gg.github.io"
     ],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
-app.add_middleware(CSRFMiddleware)
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
