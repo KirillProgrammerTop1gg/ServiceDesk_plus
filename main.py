@@ -275,7 +275,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:5173"
+        "http://localhost:5173",
         "https://kirillprogrammertop1gg.github.io"
     ],
     allow_credentials=True,
