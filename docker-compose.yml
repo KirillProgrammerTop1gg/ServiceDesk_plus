@@ -6,7 +6,7 @@ services:
     container_name: techfix-app
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "8080:8080"
     volumes:
       # Persist user uploaded images and generated payment invoices
       - ./static:/app/static
@@ -15,7 +15,7 @@ services:
     env_file:
       - .env
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/api/"]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/"]
       interval: 30s
       timeout: 10s
       retries: 3
