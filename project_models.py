@@ -26,10 +26,26 @@ def load_dotenv():
 
 load_dotenv()
 
-DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite+aiosqlite:///./database.db")
-engine = create_async_engine(DATABASE_URL, echo=True)
-async_session = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
+DB_USER = os.environ.get("DB_USER", "admin")
+DB_PASS = os.environ.get("DB_PASS", "admin")
+DB_NAME = os.environ.get("DB_NAME", "techfix")
 
+INSTANCE_CONNECTION_NAME = os.environ.get("INSTANCE_CONNECTION_NAME")
+DB_HOST = os.environ.get("DB_HOST")
+DB_PORT = os.environ.get("DB_PORT", "5432")
+
+if INSTANCE_CONNECTION_NAME:
+    DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@/{DB_NAME}"
+    connect_args = {"server_settings": {}, "host": f"/cloudsql/{INSTANCE_CONNECTION_NAME}"}
+elif DB_HOST:
+    DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    connect_args = {}
+else:
+    DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite+aiosqlite:///./database.db")
+    connect_args = {}
+
+engine = create_async_engine(DATABASE_URL, echo=True, connect_args=connect_args)
+async_session = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 
 class Base(DeclarativeBase):
     pass
