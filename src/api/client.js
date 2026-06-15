@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "/api",
+  baseURL: "https://techfix-916429625000.europe-west1.run.app",
   withCredentials: true, // sends httpOnly cookie automatically
   headers: { "Content-Type": "application/json" },
   xsrfCookieName: "csrf_token",
