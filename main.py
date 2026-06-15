@@ -257,9 +257,9 @@ class CSRFMiddleware(BaseHTTPMiddleware):
             response.set_cookie(
                 key="csrf_token",
                 value=token,
-                httponly=False,  # Accessible to Axios JS
-                samesite="lax",
-                secure=False,
+                httponly=False,
+                samesite="none",
+                secure=True,
             )
             
         return response
@@ -487,7 +487,8 @@ async def login(
         value=token,
         httponly=True,
         max_age=60 * 60 * 72,
-        samesite="lax",
+        samesite="none",
+        secure=True,
     )
     return response
 
