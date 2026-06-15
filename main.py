@@ -225,6 +225,12 @@ async def limit_strict(request: Request):
         raise HTTPException(status_code=429, detail="Забагато запитів для цієї дії. Спробуйте пізніше")
 
 
+ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "https://techfix-pink.vercel.app"
+]
+
+
 class CSRFMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         method = request.method
@@ -245,14 +251,19 @@ class CSRFMiddleware(BaseHTTPMiddleware):
         )
         
         if not bypass_verification:
-            csrf_cookie = request.cookies.get("csrf_token")
-            csrf_header = request.headers.get("X-CSRF-Token")
-            
-            if not csrf_cookie or not csrf_header or csrf_cookie != csrf_header:
-                return JSONResponse(
-                    status_code=403,
-                    content={"detail": "Помилка CSRF: токени відсутні або не збігаються"}
-                )
+            origin = request.headers.get("Origin")
+            if origin in ALLOWED_ORIGINS:
+                # Bypass token verification for requests from our trusted origins
+                pass
+            else:
+                csrf_cookie = request.cookies.get("csrf_token")
+                csrf_header = request.headers.get("X-CSRF-Token")
+                
+                if not csrf_cookie or not csrf_header or csrf_cookie != csrf_header:
+                    return JSONResponse(
+                        status_code=403,
+                        content={"detail": "Помилка CSRF: токени відсутні або не збігаються"}
+                    )
         
         response = await call_next(request)
         
@@ -279,10 +290,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 app.add_middleware(CSRFMiddleware)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "https://techfix-pink.vercel.app"
-    ],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
