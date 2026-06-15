@@ -1,0 +1,22 @@
+services:
+  techfix:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: techfix-app
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      # Persist user uploaded images and generated payment invoices
+      - ./static:/app/static
+      # Persist SQLite database file if used (if database.db doesn't exist, create an empty file first on host)
+      - ./database.db:/app/database.db
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/api/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
