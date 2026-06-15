@@ -28,7 +28,7 @@ export default function App() {
     <ThemeProvider theme={theme}>
       <GlobalStyle />
       <AuthProvider>
-        <BrowserRouter basename="/ServiceDesk_plus/">
+        <BrowserRouter>
           <Routes>
             {/* Public */}
             <Route path="/" element={<HomePage />} />
